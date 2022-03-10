@@ -28,8 +28,6 @@ def add_hipes_mongo(filename,num_to_load = 10000,delete_first=False):
   database = get_db()
   if delete_first: 
     database.hipes.delete_many({})
-    database.likes.delete_many({})
-    database.solved.delete_many({})
   print('populating list of HIPEs from the file')
   i = 0
   with open(filename,'r') as f:
@@ -38,6 +36,7 @@ def add_hipes_mongo(filename,num_to_load = 10000,delete_first=False):
       line = line.strip().split(',')
       letters = line[0]
       answers = line[1:]
+      
       database.hipes.insert_one({'letters':letters,'answers':answers})
       if i > num_to_load:
         break
