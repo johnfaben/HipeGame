@@ -77,7 +77,7 @@ To force a fresh database (e.g. after curating hipes): delete the Render databas
 ### Notes
 
 - Free tier sleeps after 15 minutes of inactivity (~30s cold start on next request)
-- Free PostgreSQL expires after 90 days — back up user data with `backup_users.py` before then (see TODO.md)
+- Free PostgreSQL expires after 30 days — back up user data with `backup_users.py` before then (see TODO.md)
 - Every push to GitHub triggers an automatic redeploy
 
 ---

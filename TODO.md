@@ -42,8 +42,8 @@ After solving, optionally show a one-liner about one of the answer words — ety
 
 ## Maintenance
 
-### Database Backup (every ~80 days on free tier)
-Render's free PostgreSQL expires after 90 days. Before it does:
+### Database Backup (every ~25 days on free tier)
+Render's free PostgreSQL expires after 30 days. Before it does:
 ```
 DATABASE_URL="<External Database URL from Render>" python backup_users.py
 ```
