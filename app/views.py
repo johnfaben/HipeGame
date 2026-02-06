@@ -151,7 +151,7 @@ def edit():
 def hipe(letters):
     hipe = Hipe.query.filter_by(letters=letters.lower()).first()
     if hipe is None:
-        flash('We do not have %s as a HIPE at the moment. Should we?' % letters)
+        flash('We do not have %s as a HIPE at the moment. <a href="mailto:jdfaben+hipegame@gmail.com?subject=HIPE suggestion: %s">Should we?</a>' % (letters, letters))
         return redirect(url_for('index'))
 
     form = AnswerForm(hipe)
@@ -179,6 +179,11 @@ def hipe(letters):
             # Clean up hint state
             hipe_state.pop(letters.lower(), None)
             session['hipe_state'] = hipe_state
+            # Flag this hipe so the answer page lets them through
+            gave_up = session.get('gave_up', [])
+            if letters.lower() not in gave_up:
+                gave_up.append(letters.lower())
+                session['gave_up'] = gave_up
             return redirect(url_for('answer', letters=letters))
 
         else:  # submit
@@ -203,16 +208,18 @@ def hipe(letters):
 def answer(letters):
     hipe = Hipe.query.filter_by(letters=letters.lower()).first()
     if hipe is None:
-        flash('We do not have %s as a HIPE at the moment. Should we?' % letters)
+        flash('We do not have %s as a HIPE at the moment. <a href="mailto:jdfaben+hipegame@gmail.com?subject=HIPE suggestion: %s">Should we?</a>' % (letters, letters))
         return redirect(url_for('index'))
-    if g.user.is_authenticated:
-        if not g.user.has_solved(hipe):
-            flash('You have not solved that HIPE yet. No peeking!')
-            return redirect(url_for('hipe', letters=letters))
-    else:
-        if not _guest_has_solved(hipe):
-            flash('You have not solved that HIPE yet. No peeking!')
-            return redirect(url_for('hipe', letters=letters))
+    gave_up = letters.lower() in session.get('gave_up', [])
+    if not gave_up:
+        if g.user.is_authenticated:
+            if not g.user.has_solved(hipe):
+                flash('You have not solved that HIPE yet. No peeking!')
+                return redirect(url_for('hipe', letters=letters))
+        else:
+            if not _guest_has_solved(hipe):
+                flash('You have not solved that HIPE yet. No peeking!')
+                return redirect(url_for('hipe', letters=letters))
     answers = Answer.query.filter_by(hipe_id=hipe.id)
     return render_template('answer.html',
             hipe=hipe,

@@ -9,7 +9,7 @@ HIPE is a word puzzle game based on a game described by mathematician Peter Wink
 3. Your answer is validated against a pre-loaded dictionary of accepted answers
 4. You can track which HIPEs you've solved, play random unsolved ones, and view all answers after solving
 
-The app is built with Flask 3.1 (Python), Bootstrap 4, SQLite (dev) / PostgreSQL (prod), and supports Google OAuth login. It has 1,468 puzzles with 2,648 answers (loaded from `list_of_hipes.txt` via `seed_db.py`).
+The app is built with Flask 3.1 (Python), Bootstrap 4, SQLite (dev) / PostgreSQL (prod), and supports Google OAuth login. It has 1,185 puzzles with 3,518 answers (loaded from `list_of_hipes.txt` via `seed_db.py`). Guests can play without logging in; signing in with Google saves progress permanently.
 
 ---
 
@@ -32,25 +32,23 @@ All critical and important fixes have been applied:
 - [x] Switched from `rauth` (abandoned) to `authlib` for OAuth
 - [x] Upgraded to Flask 3.1, SQLAlchemy 2.0, and modern dependency stack
 - [x] Log file renamed from `microblog.log` to `hipegame.log`
-- [x] Gravatar URLs use `https://`
+- [x] Removed Gravatar entirely (generic silhouette looked bad for most users)
+- [x] Removed `bootstrap-social.css` link (no longer needed)
+- [x] Fixed tests to use in-memory SQLite (no longer nuke app.db)
+- [x] Untracked `app.db` from git
 
 ---
 
-## Part 2: Feature Ideas (not yet started)
+## Part 2: Features
 
-### Quick Wins (small effort, big impact)
+### Completed
 
-**A. Play Without Login**
-- Currently the entire app requires login. Let people play as a guest — only require login to save progress. This massively reduces friction.
+- [x] **A. Play Without Login** — Guests can play freely. Progress tracked in Flask session. Transfers to account on Google sign-in.
+- [x] **B. Hint System** — "hint" button shows a masked answer (e.g. `****hq****`). "give up" button appears after a hint or wrong answer and reveals all answers without counting the hipe as solved.
+- [x] **C. More Puzzles** — 1,185 puzzles with 3,518 answers, generated from `list_of_hipes.txt` and seeded via `seed_db.py`.
+- [x] **D. Profile Redesign** — Jumbotron layout with solved count, badge-style hipe list, Bootstrap 4 edit form. Removed Gravatar, "last seen", and card-based layout.
 
-**B. Hint System**
-- "Reveal first letter", "Show word length", "Show category" — let players get unstuck without giving up
-
-**C. More Puzzles**
-- There are only 13 HIPEs. You could programmatically generate hundreds by:
-  - Taking a dictionary file (e.g. `/usr/share/dict/words` or an English word list)
-  - Finding interesting 2-4 letter substrings that appear in multiple words but aren't obvious
-  - Auto-populating the `answer` table
+### Not Yet Started
 
 **D. Difficulty Levels**
 - Rate puzzles by how common the substring is (e.g. "hipe" is hard because few words contain it; "ing" would be trivial)
@@ -137,7 +135,10 @@ If the remote already exists, just `git push`.
 3. Name it `hipegame-db`
 4. Choose the **Free** plan
 5. Click **Create Database**
-6. Copy the **Internal Database URL** (starts with `postgres://...`)
+6. Wait for the database to finish creating (takes a minute or two)
+7. On the database's info page, scroll down to **Connections**
+8. Copy the **Internal Database URL** — it starts with `postgres://...` and looks like `postgres://hipegame_db_user:PASSWORD@dpg-XXXXX/hipegame_db`
+9. You'll paste this as the `DATABASE_URL` environment variable in Step 4
 
 ### Step 4: Create a Render Web Service
 
@@ -158,26 +159,31 @@ If the remote already exists, just `git push`.
 
 ### Step 5: Initialize the Database
 
-The build command above runs `seed_db.py` which calls `db.create_all()` and populates the puzzles. On first deploy this creates all the tables and seeds the data.
+The build command in Step 4 runs `seed_db.py` automatically on every deploy. This script:
+1. Calls `db.create_all()` to create the tables (safe to run repeatedly — it won't drop existing data)
+2. Reads puzzle data from `list_of_hipes.txt` (this file is in the project root, committed to git)
+3. Populates the `hipe` and `answer` tables (skips if already populated)
+
+On first deploy, this creates all tables and seeds 1,185 puzzles with 3,518 answers. On subsequent deploys, it's a no-op since the data already exists.
 
 For future schema changes, use Flask-Migrate:
 ```bash
 # Locally:
-flask db init          # one-time setup
+flask db init          # one-time setup (already done)
 flask db migrate -m "description of change"
 flask db upgrade
 
-# On Render, add to the build command:
+# On Render, update the build command to:
 # pip install -r requirements.txt && flask db upgrade && python seed_db.py
 ```
 
 ### Step 6: Verify
 
 1. Visit `https://hipegame.onrender.com` (or your chosen URL)
-2. You should see the login page with a "sign in with google" button
-3. Click it and authenticate with your Google account
-4. After authenticating, you should land on the home page
-5. Click "Play HIPE" to test gameplay
+2. You should see the home page — guests can play without signing in
+3. Click "Play HIPE" to test gameplay
+4. Try the "sign in with google" button to test OAuth
+5. After signing in, your profile page should show solved hipes
 
 ### Ongoing
 
