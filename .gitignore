@@ -8,3 +8,4 @@ __pycache__/
 tmp/
 .env
 instance/
+backup_users_*.json
