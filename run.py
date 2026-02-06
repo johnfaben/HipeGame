@@ -1,4 +1,4 @@
-#!./venv/bin/python
+#!./hipevenv/bin/python
 
 from app import app
 

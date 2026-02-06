@@ -2,42 +2,42 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="card"> 
-        <img class="card-img-top" src = "{{user.avatar(128) }}" alt = "{{ user.username }}", 
-        <div class = "card-block">
-            <h4 class = "card-title">{{ user.username }}</h4>
-            <h6 class = "card-subtitle">Last seen: {{ user.last_seen }} </h6>
-            {% if user.about_me %}<p class = "card-text">{{ user.about_me }}</p> {% endif %}
-            {% if user.id == g.user.id %}
-            <a href="{{url_for('edit')}}" class = "btn btn-primary">Edit your profile</a>
+<div class="col-12">
+    <div class="jumbotron">
+        <h1 class="display-3">{{ user.display_name or user.username }}</h1>
+        {% if user.about_me %}<p class="lead">{{ user.about_me }}</p>{% endif %}
+        <p class="lead">You've solved {{ solved_count }} out of {{ total_hipes }} hipes</p>
+        {% if user.id == g.user.id %}
+        <a href="{{ url_for('edit') }}" class="btn btn-primary">edit profile</a>
+        {% endif %}
+    </div>
+
+    {% if hipes.items %}
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">solved hipes</h4>
+            <div>
+                {% for hipe in hipes.items %}
+                <a href="{{ url_for('answer', letters=hipe.letters) }}" class="badge badge-light" style="font-size: 1rem; margin: 0.2rem;">{{ hipe.letters }}</a>
+                {% endfor %}
+            </div>
+
+            {% if hipes.has_prev or hipes.has_next %}
+            <ul class="pagination mt-3 mb-0">
+                {% if hipes.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('user', username=user.username, page=hipes.prev_num) }}">&laquo; prev</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">&laquo; prev</a></li>
+                {% endif %}
+                {% if hipes.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('user', username=user.username, page=hipes.next_num) }}">next &raquo;</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">next &raquo;</a></li>
+                {% endif %}
+            </ul>
             {% endif %}
-         </div>
-     </div>
-
-     <div class = "card">
-         <div class = "card-block">
-             <h4 class = "card-title">Here are the HIPEs you've solved</h4>
-         {% for hipe in hipes.items %}
-         <p class = "card-text">
-
-         <a href = "{{url_for('answer',letters=hipe.letters)}}">{{hipe.letters.upper()}}</a>
-         </p>
-         {% endfor %}
-     </div>
-     
-
-<ul class="pagination">
-    {% if hipes.has_prev %}
-    <li class="page-item"><a class ="page-link" href="{{ url_for('user', username = user.username, page=hipes.prev_num) }}">Newer hipes</a></li>
-    {% else %}
-    <li class="page-item disabled"><a class = "page-link" href="#">Newer hipes</a></li>
+        </div>
+    </div>
     {% endif %}
-    {% if hipes.has_next %}
-    <li class="page-item"><a class = "page-link" href="{{ url_for('user', username = user.username, page=hipes.next_num) }}">Older hipes</a></li>
-    {% else %}
-    <li class="page-item disabled"><a class = "page-link" href="#">Older hipes</a></li>
-    {% endif %}
-</ul>
 </div>
-
 {% endblock %}

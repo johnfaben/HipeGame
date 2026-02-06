@@ -2,34 +2,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Edit Your Profile</h1>
-    <div class="well">
-        <form class="form-horizontal" action="" method="post" name="edit">
-            {{ form.hidden_tag() }}
-            <div class="control-group{% if form.display_name.errors %} error{% endif %}">
-                <label class="control-label" for="display_name">What would you like us to call you?</label>
-                <div class="controls">
-                    {{ form.display_name(maxlength=64, class="span4") }}
-                    {% for error in form.display_name.errors %}
-                        <span class="help-inline">[{{ error }}]</span><br>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="control-group{% if form.about_me.errors %} error{% endif %}">
-                <label class="control-label" for="about_me">About yourself:</label>
-                <div class="controls">
-                    {{ form.about_me(cols=64, rows=4, class="span4") }}
-                    {% for error in form.about_me.errors %}
-                        <span class="help-inline">[{{ error }}]</span><br>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="control-group">
-                <div class="controls">
-                    <input class="btn btn-primary" type="submit" value="Save Changes">
-                </div>
-            </div>
-        </form>
-        <p>{{ g.user.email }}</p>
+    <div class="jumbotron">
+        <h1 class="display-3">edit profile</h1>
     </div>
+
+    <form action="" method="post" name="edit">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <label for="display_name">what would you like us to call you?</label>
+            {{ form.display_name(maxlength=64, class="form-control") }}
+            {% for error in form.display_name.errors %}
+                <small class="text-danger">{{ error }}</small><br>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="about_me">about yourself:</label>
+            {{ form.about_me(cols=64, rows=4, class="form-control") }}
+            {% for error in form.about_me.errors %}
+                <small class="text-danger">{{ error }}</small><br>
+            {% endfor %}
+        </div>
+        <button class="btn btn-primary" type="submit">save changes</button>
+    </form>
 {% endblock %}

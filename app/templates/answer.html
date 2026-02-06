@@ -4,13 +4,22 @@
 {% block content %}
 
 <div class = "jumbotron">
-    <p class = "lead">Here are the words that contain the HIPE below:</p>
+    {% if request.args.get('solved') %}
+    <h2>Nice one! You solved <strong>{{ hipe.letters.upper() }}</strong></h2>
+    {% else %}
+    <h2>{{ hipe.letters.upper() }}</h2>
+    {% endif %}
     <hr class = "my-4">
-    <h1 class = "display-3">{{hipe.letters}}</h1>
-    <hr class = "my-4">
+    <p class = "lead">Here are all the words that contain <strong>{{ hipe.letters }}</strong>:</p>
     {% for answer in hipe.answers %}
-    <p>{{ answer.answer}}</p>
+    <p>{{ answer.answer }}</p>
     {% endfor %}
 
-    <a class = "btn btn-primary" href="{{ url_for('random') }}">Get another HIPE</a>
+    <hr class = "my-4">
+    <a class = "btn btn-primary" href="{{ url_for('random') }}">next hipe</a>
+    {% if not g.user.is_authenticated %}
+    <p class="mt-3"><a href="{{ url_for('login') }}">Sign in</a> to save your progress permanently.</p>
+    {% endif %}
+</div>
+
 {% endblock %}

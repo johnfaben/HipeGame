@@ -3,18 +3,13 @@
 
 {% block content %}
 
-    <script>gapi.load('auth2', function() {
-      gapi.auth2.init();
-    });</script>
-    <div class="well">
+    <div class="well text-center">
         <h3>Please Sign In</h3>
-            <div class="help-block">Choose one of the services below</div>
-            <div class="control-group">
-                {% for pr in providers %}
-                <div class = "mt-2" > <a href={{url_for('oauth_authorize',provider = pr)}} class = "btn btn-block btn-social btn-{{pr}}"><span class = "fab fa-{{pr}}"></span>sign in with {{pr}}</a>
-                </div>
-                {% endfor %}
-            </div>
+        <div class="mt-4">
+            <a href="{{ url_for('oauth_authorize', provider='google') }}">
+                <img src="{{ url_for('static', filename='img/google_signin.svg') }}" alt="Sign in with Google" style="height: 44px;">
+            </a>
+        </div>
     </div>
 
 {% endblock %}

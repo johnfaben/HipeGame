@@ -1,37 +1,37 @@
 import os
+from dotenv import load_dotenv
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///'+os.path.join(basedir,'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir,'db_repository')
+# Use DATABASE_URL from Render/Heroku, fall back to local SQLite for development
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'app.db'))
+# Render provides postgres:// but SQLAlchemy needs postgresql://
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
-WFT_CSRF_ENABLED = True
-SECRET_KEY = 'female-sword-touch-review-52828'
+SQLALCHEMY_DATABASE_URI = database_url
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-OPENID_PROVIDERS = [
-            {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
-            {'name': 'Yahoo', 'url': 'https://me.yahoo.com'},
-            {'name': 'AOL', 'url': 'http://openid.aol.com/<username>'},
-            {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
-            {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}
-        ]
+WTF_CSRF_ENABLED = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 
-OAUTH_CREDENTIALS = { 'facebook' : {'id': '897116857119779',
-    'secret': '359373e23a7ff9c0ee2ebc4974b4ce94',
-    },
-      'google' : {'id': '996061203539-bf7o4rv0su6psemhng8ep2aafajecseq.apps.googleusercontent.com', 'secret': 'RbgZiX35MLBuYelTCOvXGn2C'
+OAUTH_CREDENTIALS = {
+    'google': {
+        'id': os.environ.get('GOOGLE_CLIENT_ID', ''),
+        'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),
     }
-    }
+}
 
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
+MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+MAIL_PORT = int(os.environ.get('MAIL_PORT', 465))
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'thegameofhipe@gmail.com'
-MAIL_PASSWORD = 'CalumnyBagdropWaist'
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-#pagination
-POSTS_PER_PAGE = 3
-
+# pagination
+POSTS_PER_PAGE = 10
 
 # admin list
-ADMINS = ['jdfaben@gmail.com']
+ADMINS = [os.environ.get('ADMIN_EMAIL', 'admin@example.com')]

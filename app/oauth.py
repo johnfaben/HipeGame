@@ -1,11 +1,9 @@
 import json
 
-from rauth import OAuth1Service, OAuth2Service
-from urllib.request import urlopen
+from authlib.integrations.requests_client import OAuth2Session
 from flask import current_app, url_for, request, redirect, session
 
 
-sign_in_images = {'google':"https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"}
 class OAuthSignIn(object):
     providers = None
 
@@ -14,8 +12,7 @@ class OAuthSignIn(object):
         credentials = current_app.config['OAUTH_CREDENTIALS'][provider_name]
         self.consumer_id = credentials['id']
         self.consumer_secret = credentials['secret']
-        self.providers = {}
-    
+
     def authorize(self):
         pass
 
@@ -23,97 +20,57 @@ class OAuthSignIn(object):
         pass
 
     def get_callback_url(self):
-        return url_for('oauth_callback', provider = self.provider_name, _external=True)
+        return url_for('oauth_callback', provider=self.provider_name, _external=True)
 
     @classmethod
-    def get_provider(self, provider_name):
-        if self.providers is None:
-            self.providers = {}
-            for provider_class in self.__subclasses__():
+    def get_provider(cls, provider_name):
+        if cls.providers is None:
+            cls.providers = {}
+            for provider_class in cls.__subclasses__():
                 provider = provider_class()
-                self.providers[provider.provider_name] = provider
-        return self.providers[provider_name]
+                cls.providers[provider.provider_name] = provider
+        return cls.providers[provider_name]
 
-class FacebookSignIn(OAuthSignIn):
-    def __init__(self):
-        super(FacebookSignIn, self).__init__('facebook')
-        self.service = OAuth2Service(
-                name = 'facebook',
-                client_id = self.consumer_id,
-                client_secret = self.consumer_secret,
-                authorize_url = 'https://graph.facebook.com/oauth/authorize',
-                access_token_url = 'https://graph.facebook.com/oauth/access_token',
-                base_url='https://graph.facebook.com/'
-                )
-
-    def authorize(self):
-        return redirect(self.service.get_authorize_url(
-            scope='email',
-            response_type = 'code',
-            redirect_uri=self.get_callback_url())
-            )
-
-    def callback(self):
-        def decode_json(payload):
-            return json.loads(payload.decode('utf-8'))
-
-        if 'code' not in request.args:
-            return None, None, None
-
-        oauth_session = self.service.get_auth_session(
-                data = {'code': request.args['code'],
-                    'grant_type': 'authorization_code',
-                    'redirect_uri': self.get_callback_url()},
-                decoder = decode_json
-                )
-        me = oauth_session.get('me?fields=id,email').json()
-
-        return(
-                me.get('email').split('@')[0],
-
-                me.get('email'),
-                me.get('name')
-
-                )
 
 class GoogleSignIn(OAuthSignIn):
+    # Google OpenID Connect endpoints
+    AUTHORIZE_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
+    TOKEN_URL = 'https://oauth2.googleapis.com/token'
+    USERINFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo'
+
     def __init__(self):
         super(GoogleSignIn, self).__init__('google')
-        googleinfo = urlopen('https://accounts.google.com/.well-known/openid-configuration')
-        google_params = json.load(googleinfo)
-        self.service = OAuth2Service(
-                name='google',
-                client_id=self.consumer_id,
-                client_secret=self.consumer_secret,
-                authorize_url=google_params.get('authorization_endpoint'),
-                base_url=google_params.get('userinfo_endpoint'),
-                access_token_url=google_params.get('token_endpoint')
-        )
 
     def authorize(self):
-        return redirect(self.service.get_authorize_url(
-            scope='email',
-            response_type='code',
-            redirect_uri=self.get_callback_url())
-            )
-
-    def get_signin_image(self):
-        return "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+        oauth = OAuth2Session(
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            redirect_uri=self.get_callback_url(),
+            scope='openid email profile',
+        )
+        uri, state = oauth.create_authorization_url(self.AUTHORIZE_URL)
+        session['oauth_state'] = state
+        return redirect(uri)
 
     def callback(self):
         if 'code' not in request.args:
             return None, None, None
-        oauth_session = self.service.get_auth_session(
-                data={'code': request.args['code'],
-                      'grant_type': 'authorization_code',
-                      'redirect_uri': self.get_callback_url()
-                     },
-                decoder = json.loads
-        )
-        me = oauth_session.get('').json()
-        return (
-                me.get('email').split('@')[0],
-                me['email'],
-                me['name'])
 
-        
+        oauth = OAuth2Session(
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            redirect_uri=self.get_callback_url(),
+            state=session.pop('oauth_state', None),
+        )
+        token = oauth.fetch_token(
+            self.TOKEN_URL,
+            authorization_response=request.url,
+        )
+        resp = oauth.get(self.USERINFO_URL)
+        me = resp.json()
+
+        return (
+            me.get('email', '').split('@')[0],
+            me.get('email'),
+            me.get('name'),
+        )

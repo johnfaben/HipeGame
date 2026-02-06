@@ -1,1 +1,10 @@
 venv/
+hipevenv/
+hipegame/
+hipemaker/
+__pycache__/
+*.pyc
+*.db
+tmp/
+.env
+instance/

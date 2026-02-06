@@ -1,5 +1,4 @@
 from app import db
-from hashlib import md5
 from sqlalchemy.sql import func
 from flask_login import UserMixin
 
@@ -47,9 +46,6 @@ class User(UserMixin,db.Model):
             return unicode(self.id)  #python 2
         except NameError:
             return str(self.id)
-
-    def avatar(self,size):
-        return 'http://www.gravatar.com/avatar/%s?d=mm&s=%d' %(md5(self.email.encode('utf-8')).hexdigest(),size)
 
     @staticmethod
     def make_unique_username(username):
