@@ -24,7 +24,7 @@
 
 <script>
 function shareHipe() {
-    var text = 'I found a word with "{{ hipe.letters.upper() }}" in it. Can you? hipegame.johnfaben.com/hipe/{{ hipe.letters }}';
+    var text = 'I found a word with "{{ hipe.letters.upper() }}" in it. Can you? https://hipegame.johnfaben.com/hipe/{{ hipe.letters }}';
     if (navigator.share) {
         navigator.share({ text: text });
     } else {
