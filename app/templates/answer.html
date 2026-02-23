@@ -25,12 +25,10 @@
 <script>
 function shareHipe() {
     var text = 'I found a word with "{{ hipe.letters.upper() }}" in it. Can you? https://hipegame.johnfaben.com/hipe/{{ hipe.letters }}';
-    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (isMobile && navigator.share) {
+    if (navigator.share) {
         navigator.share({
             title: 'HIPE puzzle: {{ hipe.letters.upper() }}',
-            text: text,
-            url: 'https://hipegame.johnfaben.com/hipe/{{ hipe.letters }}'
+            text: text
         });
     } else {
         navigator.clipboard.writeText(text).then(function() {
