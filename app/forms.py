@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, TextAreaField
+from wtforms import StringField, TextAreaField
 from wtforms.validators import DataRequired, Length
 from app.models import User, Answer, Hipe
 
@@ -30,11 +30,12 @@ class AnswerForm(FlaskForm):
             return False
 
         letters = self.hipe.letters
-        if letters not in self.answer.data.lower():
+        guess = self.answer.data.lower().replace(' ', '')
+        if letters not in guess:
             self.answer.errors.append('The letters %s are not in the word %s, try again.' % (letters, self.answer.data))
             return False
 
-        answer = Answer.query.filter_by(answer=self.answer.data.lower()).filter_by(hipe=self.hipe).first()
+        answer = Answer.query.filter_by(answer=guess).filter_by(hipe=self.hipe).first()
         if answer is not None:
             return True
         else:

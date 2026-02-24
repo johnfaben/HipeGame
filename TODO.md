@@ -42,16 +42,6 @@ After solving, optionally show a one-liner about one of the answer words — ety
 
 ## Maintenance
 
-### Database Backup (every ~25 days on free tier)
-Render's free PostgreSQL expires after 30 days. Before it does:
-```
-DATABASE_URL="<External Database URL from Render>" python backup_users.py
-```
-Then recreate the database on Render, update `DATABASE_URL` env var if the connection string changed, trigger a redeploy, and restore:
-```
-DATABASE_URL="<new External Database URL>" python backup_users.py --restore backup_users_YYYY-MM-DD.json
-```
-
 ### Curating Hipes
 - Edit `list_of_hipes.txt` to add/remove hipes and answers
 - Run `python seed_db.py` locally to test

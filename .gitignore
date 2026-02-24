@@ -5,7 +5,11 @@ hipemaker/
 __pycache__/
 *.pyc
 *.db
+*.log
+log.*
 tmp/
 .env
 instance/
 backup_users_*.json
+word.list.txt
+curation_progress.json

@@ -1,41 +1,29 @@
+import os
+import logging
+from logging.handlers import RotatingFileHandler
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
+
+from config import basedir, ADMINS
 
 app = Flask(__name__)
 app.config.from_object('config')
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-import os
-from flask_login import LoginManager
-from config import basedir, ADMINS, MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD
-from flask_mail import Mail
-
-mail = Mail(app)
+csrf = CSRFProtect(app)
 
 lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 
-# To be set when we have an email server, and so can enable email logging of errors
-mail_errors = False
-
-if not app.debug and mail_errors:
-    import logging
-    from logging.handlers import SMTPHandler
-    credentials = None
-    if MAIL_USERNAME or MAIL_PASSWORD:
-        credentials = (MAIL_USERNAME, MAIL_PASSWORD)
-    mail_handler = SMTPHandler((MAIL_SERVER, MAIL_PORT), 'noreply@' + MAIL_SERVER, ADMINS, 'hipegame error', credentials)
-    mail_handler.setLevel(logging.ERROR)
-    app.logger.addHandler(mail_handler)
-
 if not app.debug:
-    import logging
-    from logging.handlers import RotatingFileHandler
     file_handler = RotatingFileHandler('tmp/hipegame.log', 'a', 1 * 1024 * 1024, 10)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.setLevel(logging.INFO)

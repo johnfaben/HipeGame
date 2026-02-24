@@ -1,5 +1,3 @@
-import json
-
 from authlib.integrations.requests_client import OAuth2Session
 from flask import current_app, url_for, request, redirect, session
 
@@ -74,3 +72,5 @@ class GoogleSignIn(OAuthSignIn):
             me.get('email'),
             me.get('name'),
         )
+
+

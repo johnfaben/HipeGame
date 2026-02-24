@@ -12,6 +12,30 @@
         {% endif %}
     </div>
 
+    {% if achievements %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title">achievements</h4>
+            <div class="row">
+                {% for a in achievements %}
+                <div class="col-6 col-md-4 mb-2">
+                    <div class="card h-100 {% if a.unlocked %}border-success{% endif %}" style="{% if a.unlocked %}background-color: #d4edda;{% else %}background-color: #f8f9fa;{% endif %}">
+                        <div class="card-body p-2 text-center">
+                            <strong {% if not a.unlocked %}class="text-muted"{% endif %}>{{ a.name }}</strong>
+                            <br>
+                            <small {% if not a.unlocked %}class="text-muted"{% endif %}>{{ a.description }}</small>
+                            {% if a.progress is defined and a.progress %}
+                            <br><small class="{% if a.unlocked %}text-success{% else %}text-muted{% endif %} font-weight-bold">{{ a.progress }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% if hipes.items %}
     <div class="card">
         <div class="card-body">
