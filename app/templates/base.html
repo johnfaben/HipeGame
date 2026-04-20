@@ -1,48 +1,126 @@
 <!DOCTYPE html>
-<html>
-  <head>
-
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if title %}
     <title>{{ title }} - the game of HIPE</title>
     {% else %}
     <title>the game of HIPE</title>
     {% endif %}
-   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
- <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="https://johnfaben.com/base.css">
+    <style>
+        button, .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        button:hover, .btn:hover { background: var(--panel-hover); text-decoration: none; }
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="{{ url_for('index') }}">HIPE</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-                </button>
-                  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-item nav-link active" href="{{ url_for('index') }}">Home<span class="sr-only">(current)</span></a>
-                        <a class ="nav-item nav-link active" href="{{ url_for('random') }}">Play HIPE</a>
+        button.primary, .btn.primary {
+            background: var(--success);
+            color: #fff;
+            border-color: var(--success);
+        }
+        button.primary:hover, .btn.primary:hover {
+            background: var(--success-hover);
+            border-color: var(--success-hover);
+        }
 
-                       {% if g.user.is_authenticated %}
-                        <a class="nav-item nav-link" href="{{ url_for('user', username=g.user.username) }}">Your Profile</a>
-                        <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
-                       {% else %}
-                        <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-                       {% endif %}
-                    </div>
-                  </div>
-        </nav>
-        <div class = "row">
-            {% include 'flash.html' %}
+        input[type=text], input[type=email], input[type=search], textarea {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: #fff;
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus { border-color: var(--heading); outline: none; }
+
+        .hero {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 30px 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .letters {
+            font-size: 3.5em;
+            letter-spacing: 0.2em;
+            color: var(--heading);
+            font-weight: normal;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+
+        .chip {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin: 3px;
+            font-size: 14px;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .chip:hover { background: var(--panel-hover); text-decoration: none; }
+
+        .pagination { margin: 16px 0; text-align: center; }
+        .pagination a { margin: 0 10px; color: var(--accent); text-decoration: none; }
+        .pagination .disabled { color: var(--muted); pointer-events: none; }
+
+        .error-text { color: #8b0000; font-size: 13px; }
+
+        .achievement {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            background: var(--panel);
+        }
+        .achievement.locked { color: var(--muted); background: transparent; }
+        .achievement.unlocked { border-color: var(--heading); }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div class="container">
+            <h1><a href="{{ url_for('index') }}">HIPE game</a></h1>
         </div>
-        <div class = "row">
+    </div>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('random') }}">Play HIPE</a></li>
+                {% if g.user.is_authenticated %}
+                    <li><a href="{{ url_for('user', username=g.user.username) }}">Profile</a></li>
+                    <li class="nav-logout"><a href="{{ url_for('logout') }}">Log out</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Log in</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% include 'flash.html' %}
+
+    <div id="content">
+        <div class="container">
             {% block content %}{% endblock %}
         </div>
-
-
     </div>
-  </body>
+</body>
 </html>

@@ -1,36 +1,30 @@
-<!-- extend base layout -->
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div class = "jumbotron">
-    <p class = "lead">Can you find a word that contains the following letters?</p>
-    <hr class = "my-4">
-    <h1 class = "display-3">{{hipe.letters}}</h1>
-    <hr class = "my-4">
+<div class="hero">
+    <p>Can you find a word that contains the following letters?</p>
+    <div class="letters">{{ hipe.letters }}</div>
     {% if hint_text %}
-    <h1 class="display-3">{{ hint_text }}</h1>
+    <div class="letters">{{ hint_text }}</div>
     {% endif %}
-    <form method = "post" name="answer_form">
-        {{ form.hidden_tag() }}
-        <div class = "form-group{% if form.answer.errors %} error{% endif %}">
-            <label for="answer"></label>
-                <div class="controls">
-                    {{ form.answer(maxlength=26, class="span4") }}
-                    {% for error in form.answer.errors %}
-                        <span class="help-inline">[{{ error }}]</span><br>
-                    {% endfor %}
-                </div>
-        </div>
-        <button type="submit" name="action" value="submit" class="btn btn-primary">submit</button>
-        <button type="submit" name="action" value="hint" class="btn btn-secondary" formnovalidate>hint</button>
-        {% if show_giveup %}
-        <button type="submit" name="action" value="giveup" class="btn btn-outline-danger" formnovalidate>give up</button>
-        {% endif %}
-    </form>
-    <div class="mt-3">
-        <a href="{{ url_for('random') }}" class="btn btn-outline-secondary btn-sm">get another hipe</a>
-    </div>
-</div>
 
+    <form method="post" name="answer_form" style="margin-top: 20px;">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.answer(maxlength=26, type='text', autofocus=true, autocomplete='off') }}
+            {% for error in form.answer.errors %}
+                <div class="error-text">[{{ error }}]</div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 12px;">
+            <button type="submit" name="action" value="submit" class="primary">submit</button>
+            <button type="submit" name="action" value="hint" formnovalidate>hint</button>
+            {% if show_giveup %}
+            <button type="submit" name="action" value="giveup" formnovalidate>give up</button>
+            {% endif %}
+        </div>
+    </form>
+
+    <p style="margin-top: 20px;"><a href="{{ url_for('random') }}">get another hipe</a></p>
+</div>
 {% endblock %}

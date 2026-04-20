@@ -1,67 +1,52 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="col-12">
-    <div class="jumbotron">
-        <h1 class="display-3">{{ user.display_name or user.username }}</h1>
-        {% if user.about_me %}<p class="lead">{{ user.about_me }}</p>{% endif %}
-        <p class="lead">You've solved {{ solved_count }} out of {{ total_hipes }} hipes</p>
-        {% if user.id == g.user.id %}
-        <a href="{{ url_for('edit') }}" class="btn btn-primary">edit profile</a>
-        {% endif %}
-    </div>
-
-    {% if achievements %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h4 class="card-title">achievements</h4>
-            <div class="row">
-                {% for a in achievements %}
-                <div class="col-6 col-md-4 mb-2">
-                    <div class="card h-100 {% if a.unlocked %}border-success{% endif %}" style="{% if a.unlocked %}background-color: #d4edda;{% else %}background-color: #f8f9fa;{% endif %}">
-                        <div class="card-body p-2 text-center">
-                            <strong {% if not a.unlocked %}class="text-muted"{% endif %}>{{ a.name }}</strong>
-                            <br>
-                            <small {% if not a.unlocked %}class="text-muted"{% endif %}>{{ a.description }}</small>
-                            {% if a.progress is defined and a.progress %}
-                            <br><small class="{% if a.unlocked %}text-success{% else %}text-muted{% endif %} font-weight-bold">{{ a.progress }}</small>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    {% if hipes.items %}
-    <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">solved hipes</h4>
-            <div>
-                {% for hipe in hipes.items %}
-                <a href="{{ url_for('answer', letters=hipe.letters) }}" class="badge badge-light" style="font-size: 1rem; margin: 0.2rem;">{{ hipe.letters }}</a>
-                {% endfor %}
-            </div>
-
-            {% if hipes.has_prev or hipes.has_next %}
-            <ul class="pagination mt-3 mb-0">
-                {% if hipes.has_prev %}
-                <li class="page-item"><a class="page-link" href="{{ url_for('user', username=user.username, page=hipes.prev_num) }}">&laquo; prev</a></li>
-                {% else %}
-                <li class="page-item disabled"><a class="page-link" href="#">&laquo; prev</a></li>
-                {% endif %}
-                {% if hipes.has_next %}
-                <li class="page-item"><a class="page-link" href="{{ url_for('user', username=user.username, page=hipes.next_num) }}">next &raquo;</a></li>
-                {% else %}
-                <li class="page-item disabled"><a class="page-link" href="#">next &raquo;</a></li>
-                {% endif %}
-            </ul>
-            {% endif %}
-        </div>
-    </div>
+<div class="hero">
+    <h2>{{ user.display_name or user.username }}</h2>
+    {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+    <p>You've solved {{ solved_count }} out of {{ total_hipes }} hipes.</p>
+    {% if user.id == g.user.id %}
+    <p style="margin-top: 16px;"><a class="btn" href="{{ url_for('edit') }}">edit profile</a></p>
     {% endif %}
 </div>
+
+{% if achievements %}
+<h3>Achievements</h3>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 24px;">
+    {% for a in achievements %}
+    <div class="achievement {% if a.unlocked %}unlocked{% else %}locked{% endif %}">
+        <strong>{{ a.name }}</strong>
+        <br>
+        <small>{{ a.description }}</small>
+        {% if a.progress is defined and a.progress %}
+        <br><small>{{ a.progress }}</small>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if hipes.items %}
+<h3>Solved hipes</h3>
+<div>
+    {% for hipe in hipes.items %}
+    <a class="chip" href="{{ url_for('answer', letters=hipe.letters) }}">{{ hipe.letters }}</a>
+    {% endfor %}
+</div>
+
+{% if hipes.has_prev or hipes.has_next %}
+<div class="pagination">
+    {% if hipes.has_prev %}
+    <a href="{{ url_for('user', username=user.username, page=hipes.prev_num) }}">&laquo; prev</a>
+    {% else %}
+    <span class="disabled">&laquo; prev</span>
+    {% endif %}
+    {% if hipes.has_next %}
+    <a href="{{ url_for('user', username=user.username, page=hipes.next_num) }}">next &raquo;</a>
+    {% else %}
+    <span class="disabled">next &raquo;</span>
+    {% endif %}
+</div>
+{% endif %}
+{% endif %}
 {% endblock %}

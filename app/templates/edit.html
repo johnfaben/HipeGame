@@ -1,40 +1,39 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="jumbotron">
-        {% if welcome %}
-            <h1 class="display-3">welcome to HIPE!</h1>
-            <p class="lead">Before you start playing, tell us what to call you.</p>
-        {% else %}
-            <h1 class="display-3">your profile</h1>
-        {% endif %}
-    </div>
+<div class="hero">
+    {% if welcome %}
+        <h2>Welcome to HIPE!</h2>
+        <p>Before you start playing, tell us what to call you.</p>
+    {% else %}
+        <h2>Your profile</h2>
+    {% endif %}
+</div>
 
-    <form action="" method="post" name="edit" style="max-width: 480px;">
-        {{ form.hidden_tag() }}
-        {% if welcome %}
-            <input type="hidden" name="welcome" value="1">
-        {% endif %}
-        <div class="form-group">
-            <label for="display_name">what would you like us to call you?</label>
-            {{ form.display_name(maxlength=64, class="form-control", placeholder="your name") }}
-            {% for error in form.display_name.errors %}
-                <small class="text-danger">{{ error }}</small><br>
-            {% endfor %}
-        </div>
-        <div class="form-group">
-            <label for="about_me">about yourself <small class="text-muted">(optional)</small></label>
-            {{ form.about_me(cols=64, rows=4, class="form-control", placeholder="a few words about you") }}
-            {% for error in form.about_me.errors %}
-                <small class="text-danger">{{ error }}</small><br>
-            {% endfor %}
-        </div>
-        {% if welcome %}
-            <button class="btn btn-primary" type="submit">let's go!</button>
-            <a href="{{ url_for('index') }}" class="btn btn-link text-muted ml-2">skip for now</a>
-        {% else %}
-            <button class="btn btn-primary" type="submit">save changes</button>
-        {% endif %}
-    </form>
+<form action="" method="post" name="edit" style="max-width: 480px;">
+    {{ form.hidden_tag() }}
+    {% if welcome %}
+        <input type="hidden" name="welcome" value="1">
+    {% endif %}
+    <div style="margin-bottom: 16px;">
+        <label for="display_name" style="display: block; margin-bottom: 6px;">What would you like us to call you?</label>
+        {{ form.display_name(maxlength=64, placeholder='your name', style='width: 100%;') }}
+        {% for error in form.display_name.errors %}
+            <div class="error-text">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div style="margin-bottom: 16px;">
+        <label for="about_me" style="display: block; margin-bottom: 6px;">About yourself <span style="color: var(--muted); font-size: 13px;">(optional)</span></label>
+        {{ form.about_me(cols=64, rows=4, placeholder='a few words about you', style='width: 100%;') }}
+        {% for error in form.about_me.errors %}
+            <div class="error-text">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {% if welcome %}
+        <button class="primary" type="submit">let's go!</button>
+        <a href="{{ url_for('index') }}" style="margin-left: 10px; color: var(--muted);">skip for now</a>
+    {% else %}
+        <button class="primary" type="submit">save changes</button>
+    {% endif %}
+</form>
 {% endblock %}

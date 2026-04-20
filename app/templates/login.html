@@ -1,31 +1,24 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
+<div class="hero">
+    <h2>Please sign in</h2>
 
-    <div class="well text-center">
-        <h3>Please Sign In</h3>
+    <form method="POST" action="{{ url_for('magic_link_request') }}" style="margin-top: 20px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="email" name="email" placeholder="your email" required style="max-width: 250px;">
+        <button type="submit" class="primary">send magic link</button>
+    </form>
+    <p style="color: var(--muted); font-size: 13px; margin-top: 8px;">No password needed, we'll email you a login link.</p>
 
-        <div class="mt-4">
-            <form method="POST" action="{{ url_for('magic_link_request') }}" class="form-inline justify-content-center">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <input type="email" name="email" class="form-control mr-2" placeholder="your email" required style="max-width: 250px;">
-                <button type="submit" class="btn btn-primary">send magic link</button>
-            </form>
-            <small class="text-muted mt-2 d-block">No password needed — we'll email you a login link.</small>
-        </div>
-
-        <div class="my-4 d-flex align-items-center" style="max-width: 300px; margin-left: auto; margin-right: auto;">
-            <hr class="flex-grow-1">
-            <span class="mx-3 text-muted">or</span>
-            <hr class="flex-grow-1">
-        </div>
-
-        <div>
-            <a href="{{ url_for('oauth_authorize', provider='google') }}">
-                <img src="{{ url_for('static', filename='img/google_signin.svg') }}" alt="Sign in with Google" style="height: 44px;">
-            </a>
-        </div>
+    <div style="display: flex; align-items: center; max-width: 300px; margin: 24px auto;">
+        <hr style="flex: 1; border: none; border-top: 1px solid var(--border);">
+        <span style="margin: 0 12px; color: var(--muted); font-size: 14px;">or</span>
+        <hr style="flex: 1; border: none; border-top: 1px solid var(--border);">
     </div>
 
+    <a href="{{ url_for('oauth_authorize', provider='google') }}">
+        <img src="{{ url_for('static', filename='img/google_signin.svg') }}" alt="Sign in with Google" style="height: 44px;">
+    </a>
+</div>
 {% endblock %}

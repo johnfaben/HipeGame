@@ -1,18 +1,14 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class = "jumbotron">
+<div class="hero">
     {% if g.user.is_authenticated %}
-    <h1 class = "display-3">Hi, {{ g.user.display_name }}!</h1>
+    <h2>Hi, {{ g.user.display_name }}!</h2>
     {% else %}
-    <h1 class = "display-3">Welcome!</h1>
+    <h2>Welcome to HIPE</h2>
     {% endif %}
-    <p class ="lead">Welcome to HIPE</p>
-    <p> the game of HIPE was described by Peter Winkler in his excellent collection of mathematical puzzles</p>
-
-    <p>the rules are very straightforward, you are given a string of letters, and your goal is to find an English word that contains those letters as a substring. So, for example, if the string were 'HIPE', the answer might be 'arcHIPElago'.</p>
-
-    <a class = "btn btn-primary" href="{{ url_for('random') }}">Play Hipe</a>
+    <p>The game of HIPE was described by Peter Winkler in his excellent collection of mathematical puzzles.</p>
+    <p>The rules are straightforward: you are given a string of letters, and your goal is to find an English word that contains those letters as a substring. So if the string were "HIPE", the answer might be "arc<strong>HIPE</strong>lago".</p>
+    <p style="margin-top: 24px;"><a class="btn primary" href="{{ url_for('random') }}">Play HIPE</a></p>
 </div>
 {% endblock %}
